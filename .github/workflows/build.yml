@@ -28,13 +28,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Prepare Cordova www folder
+      - name: Prepare Cordova project
         run: |
           rm -rf www
           mkdir -p www
+          mkdir -p res
+
           cp index.html www/index.html
           cp Bypass.html www/Bypass.html
           cp style.css www/style.css
+          cp icon.png res/icon.png
 
       - name: Add Android platform
         run: npx cordova platform add android@13.0.0
