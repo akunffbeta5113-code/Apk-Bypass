@@ -38,22 +38,22 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 --decode > bypass-release.keystore
 
       - name: Build signed APK
-  env:
-    KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-    KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-    KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-  run: |
-    npx cordova build android --release \
-      -- \
-      --keystore=../bypass-release.keystore \
-      --storePassword="$KEYSTORE_PASSWORD" \
-      --alias="$KEY_ALIAS" \
-      --password="$KEY_PASSWORD"
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          npx cordova build android --release \
+            -- \
+            --keystore=../bypass-release.keystore \
+            --storePassword="$KEYSTORE_PASSWORD" \
+            --alias="$KEY_ALIAS" \
+            --password="$KEY_PASSWORD"
 
       - name: Rename APK
         run: |
           mv platforms/android/app/build/outputs/apk/release/app-release.apk \
-             platforms/android/app/build/outputs/apk/release/BYPASS-APP.apk
+            platforms/android/app/build/outputs/apk/release/BYPASS-APP.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
