@@ -1,0 +1,52 @@
+name: Build Bypass APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Prepare Cordova www folder
+        run: |
+          rm -rf www
+          mkdir -p www
+
+          cp index.html www/index.html
+          cp Bypass.html www/Bypass.html
+          cp style.css www/style.css
+
+      - name: Add Android platform
+        run: npx cordova platform add android@13.0.0
+
+      - name: Build APK
+        run: npx cordova build android --debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BYPASS-APK
+          path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
