@@ -50,8 +50,22 @@ jobs:
             --alias="$KEY_ALIAS" \
             --password="$KEY_PASSWORD"
 
-      - name: Inspect build output
-        if: always()
+      - name: Find APK
         run: |
-          echo "=== APK search ==="
-          find . -type f \( -name "*.apk" -o -name "*.aab" \) -print
+          APK=$(find platforms/android -type f -name "*.apk" | head -n 1)
+
+          if [ -z "$APK" ]; then
+            echo "APK tidak ditemukan!"
+            find platforms/android -type f | sort
+            exit 1
+          fi
+
+          echo "APK ditemukan: $APK"
+          cp "$APK" BYPASS-APP.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BYPASS-APP
+          path: BYPASS-APP.apk
+          if-no-files-found: error
