@@ -28,11 +28,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Prepare www folder
-        run: |
-          cp Bypass.html www/Bypass.html
-          cp assets/css/style.css www/style.css
-
       - name: Add Android platform
         run: npx cordova platform add android@13.0.0
 
