@@ -50,22 +50,27 @@ jobs:
             --alias="$KEY_ALIAS" \
             --password="$KEY_PASSWORD"
 
-      - name: Find APK
+            - name: Build signed APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          echo "APK files:"
-          find platforms/android -type f -name "*.apk" -print
+          npx cordova build android --release \
+            -- \
+            --keystore=../bypass-release.keystore \
+            --storePassword="$KEYSTORE_PASSWORD" \
+            --alias="$KEY_ALIAS" \
+            --password="$KEY_PASSWORD"
 
-      - name: Rename APK
+      - name: Inspect build output
+        if: always()
         run: |
-          APK=$(find platforms/android -type f -name "*.apk" | head -n 1)
+          echo "=== platforms/android ==="
+          find platforms/android -maxdepth 8 -type f | sort | tail -100
 
-          if [ -z "$APK" ]; then
-            echo "APK tidak ditemukan!"
-            exit 1
-          fi
-
-          echo "APK ditemukan: $APK"
-          cp "$APK" BYPASS-APP.apk
+          echo "=== APK search ==="
+          find . -type f \( -name "*.apk" -o -name "*.aab" \) -print
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
