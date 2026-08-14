@@ -31,41 +31,12 @@ jobs:
       - name: Add Android platform
         run: npx cordova platform add android@13.0.0
 
-      - name: Create keystore
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-        run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > bypass-release.keystore
-
-      - name: Build signed APK
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          npx cordova build android --release \
-            -- \
-            --keystore=../bypass-release.keystore \
-            --storePassword="$KEYSTORE_PASSWORD" \
-            --alias="$KEY_ALIAS" \
-            --password="$KEY_PASSWORD"
-
-      - name: Find APK
-        run: |
-          APK=$(find platforms/android -type f -name "*.apk" | head -n 1)
-
-          if [ -z "$APK" ]; then
-            echo "APK tidak ditemukan!"
-            find platforms/android -type f | sort
-            exit 1
-          fi
-
-          echo "APK ditemukan: $APK"
-          cp "$APK" BYPASS-APP.apk
+      - name: Build APK
+        run: npx cordova build android --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: BYPASS-APP
-          path: BYPASS-APP.apk
+          name: BYPASS-APK
+          path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
