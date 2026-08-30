@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
@@ -21,14 +20,6 @@ h1{text-align:center;font-size:32px;line-height:1.15;font-weight:800;letter-spac
 h1 span{color:#ffca18}
 .subtitle{text-align:center;color:#9498a8;margin-top:8px;font-size:14px}
 .live{width:max-content;margin:25px auto 28px;padding:8px 22px;border-radius:22px;background:#4b1e22;color:#ff6262;font-size:14px;font-weight:700}
-.dateNow{
-  text-align:center;
-  color:#b8bccb;
-  font-size:13px;
-  font-weight:600;
-  margin:-15px auto 25px;
-  letter-spacing:.2px
-}
 .cards{display:flex;flex-direction:column;gap:15px}
 .service{position:relative;display:flex;align-items:center;gap:17px;width:100%;min-height:91px;padding:14px 17px 14px 14px;border-radius:25px;background:#181b27;border:2px solid var(--accent);box-shadow:0 10px 28px #0003;cursor:pointer;transition:.18s;overflow:hidden}
 .service:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,#fff0 50%,#fff08);pointer-events:none}
@@ -64,8 +55,8 @@ button{cursor:pointer}
 .copy{background:#fff;color:#111}
 .open{background:#39df88;color:#08130d}
 .debug{margin-top:13px;background:#0d0f17;border-radius:13px;overflow:hidden}
-.debugHead{padding:12px;display:flex;justify-content:space-between;font-size:13px;font-weight:700}
-.debugBody{display:none;padding:12px;border-top:1px solid #262a37;color:#b8ffcf;font:12px monospace;white-space:pre-wrap;word-break:break-word;max-height:150px;overflow:auto}
+.debugHead{padding:12px;display:flex;justify-content:space-between;font-size:13px;font-weight:700;cursor:pointer}
+.debugBody{display:none;padding:12px;border-top:1px solid #262a37;color:#b8ffcf;font:12px monospace;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow:auto;background:#0a0c12}
 .toast{position:fixed;z-index:50;left:50%;bottom:20px;transform:translate(-50%,120px);background:#20232e;padding:11px 17px;border-radius:12px;box-shadow:0 12px 30px #0008;transition:.25s;font-size:13px}
 .toast.show{transform:translate(-50%,0)}
 @media(max-width:370px){.app{padding:23px 16px}h1{font-size:28px}.music{display:none}.service{min-height:84px}.icon{width:57px;height:57px;flex-basis:57px}}
@@ -90,9 +81,9 @@ button{cursor:pointer}
       <div class="info"><b>SFL BYPASS</b><small>Bypass Link • Fast</small></div>
       <div class="arrow">›</div>
     </div>
-    <div class="service" style="--accent:#a855f7" data-type="bicolink">
+    <div class="service" style="--accent:#00e676" data-type="delta">
       <div class="icon">≡★</div>
-      <div class="info"><b>BICOLINK BYPASS</b><small>Bypass Link • Fast</small></div>
+      <div class="info"><b>DELTA BYPASS</b><small>Bypass Link • Fast</small></div>
       <div class="arrow">›</div>
     </div>
     <div class="service" style="--accent:#38bdf8" data-type="linkvertise">
@@ -100,9 +91,9 @@ button{cursor:pointer}
       <div class="info"><b>LINKVERTISE BYPASS</b><small>Bypass Link • Fast</small></div>
       <div class="arrow">›</div>
     </div>
-    <div class="service" style="--accent:#22c55e" data-type="demon">
+    <div class="service" style="--accent:#a855f7" data-type="universal">
       <div class="icon">≡★</div>
-      <div class="info"><b>DEMONBYPASS</b><small>Key System • Fast</small></div>
+      <div class="info"><b>UNIVERSAL BYPASS</b><small>Bypass All Link • Fast</small></div>
       <div class="arrow">›</div>
     </div>
   </section>
@@ -149,15 +140,17 @@ button{cursor:pointer}
 <div class="toast" id="toast">Berhasil</div>
 
 <script>
-// API key disimpan di Vercel, bukan di HTML publik.
+// Ganti dengan URL Vercel Anda
 const PROXY_URL = 'https://bypass-proxy.vercel.app/api/bypass';
+
 const ENDPOINTS = {
   adlink: 'adlink',
   sfl: 'sfl',
-  bicolink: 'bicolink',
+  delta: 'izen',
   linkvertise: 'linkvertise',
-  demon: 'delta'
+  universal: 'universal'
 };
+
 let currentType = "adlink";
 let resultLink = "";
 
@@ -169,7 +162,18 @@ function toast(text){
   $("toast").classList.add("show");
   setTimeout(() => $("toast").classList.remove("show"), 2300);
 }
-function debug(text){ $("debugBody").textContent = text; }
+
+function debug(text){
+  const el = $("debugBody");
+  if (typeof text === 'object') {
+    el.textContent = JSON.stringify(text, null, 2);
+  } else {
+    el.textContent = text;
+  }
+  if (text && typeof text === 'string' && (text.includes('error') || text.includes('Error'))) {
+    $("debugBody").style.display = "block";
+  }
+}
 
 document.querySelectorAll(".service").forEach(card => {
   card.addEventListener("click", () => {
@@ -177,16 +181,16 @@ document.querySelectorAll(".service").forEach(card => {
     const names = {
       adlink: "AdLinkSumo Bypass",
       sfl: "SFL Bypass",
-      bicolink: "Bicolink Bypass",
+      delta: "Delta Bypass",
       linkvertise: "Linkvertise Bypass",
-      demon: "DemonBypass"
+      universal: "Universal Bypass"
     };
     const placeholders = {
       adlink: "Tempel link AdLinkSumo di sini",
       sfl: "Tempel link SFL di sini",
-      bicolink: "Tempel link Bicolink di sini",
+      delta: "Tempel link DeltaBypass di sini",
       linkvertise: "Tempel link Linkvertise di sini",
-      demon: "Tempel link DemonBypass di sini"
+      universal: "Tempel link Universal Bypass di sini"
     };
     $("modalTitle").textContent = names[currentType];
     $("url").placeholder = placeholders[currentType];
@@ -220,7 +224,8 @@ $("clear").onclick = () => {
 };
 
 $("debugToggle").onclick = () => {
-  $("debugBody").style.display = $("debugBody").style.display === "block" ? "none" : "block";
+  const body = $("debugBody");
+  body.style.display = body.style.display === "block" ? "none" : "block";
 };
 
 $("copy").onclick = async () => {
@@ -273,25 +278,24 @@ async function bypass(){
 
   $("loader").style.display = "block";
   $("result").style.display = "none";
-  debug("Mengirim request melalui proxy...");
+  debug({
+    status: "Mengirim request...",
+    endpoint: ENDPOINTS[currentType],
+    url: url,
+    proxy: PROXY_URL
+  });
   const start = performance.now();
 
   try {
     const endpoint = ENDPOINTS[currentType];
-    const requestUrl =
-      PROXY_URL + "?type=" + encodeURIComponent(endpoint) +
-      "&url=" + encodeURIComponent(url);
+    const requestUrl = PROXY_URL + "?type=" + encodeURIComponent(endpoint) + "&url=" + encodeURIComponent(url);
 
-    // SFL/AdLinkSumo melalui Vercel proxy agar browser/WebView tidak
-    // perlu mengirim API key langsung ke Theresav.
     const res = await fetch(requestUrl, { method: "GET" });
 
     const contentType = res.headers.get("content-type") || "";
     let json = null;
     let raw = "";
 
-    // Baca body mentah terlebih dahulu supaya error 400/401/403/429
-    // dari server tidak hilang.
     try {
       raw = (await res.text()).trim();
     } catch(e) {
@@ -304,13 +308,20 @@ async function bypass(){
 
     const elapsed = Math.round(performance.now() - start);
 
-    debug(JSON.stringify({
-      status: res.status,
-      ok: res.ok,
-      contentType: contentType,
-      responseTime: elapsed + " ms",
-      response: (json !== null ? json : (raw || "(empty response)"))
-    }, null, 2));
+    debug({
+      request: {
+        url: requestUrl,
+        method: "GET"
+      },
+      response: {
+        status: res.status,
+        ok: res.ok,
+        statusText: res.statusText,
+        contentType: contentType,
+        responseTime: elapsed + " ms"
+      },
+      data: json !== null ? json : (raw || "(empty response)")
+    });
 
     if(!res.ok) {
       let detail = "";
@@ -320,18 +331,10 @@ async function bypass(){
         detail = raw;
       }
 
-      if(res.status === 400) {
-        throw new Error("HTTP 400" + (detail ? " - " + detail : " - Request ditolak server"));
-      }
-      if(res.status === 401) {
-        throw new Error("HTTP 401" + (detail ? " - " + detail : " - API Key tidak valid"));
-      }
-      if(res.status === 403) {
-        throw new Error("HTTP 403" + (detail ? " - " + detail : " - Request ditolak server"));
-      }
-      if(res.status === 429) {
-        throw new Error("HTTP 429" + (detail ? " - " + detail : " - Terlalu banyak request"));
-      }
+      if(res.status === 400) throw new Error("HTTP 400" + (detail ? " - " + detail : ""));
+      if(res.status === 401) throw new Error("HTTP 401" + (detail ? " - " + detail : " - API Key tidak valid"));
+      if(res.status === 403) throw new Error("HTTP 403" + (detail ? " - " + detail : ""));
+      if(res.status === 429) throw new Error("HTTP 429" + (detail ? " - " + detail : " - Terlalu banyak request"));
       throw new Error("HTTP " + res.status + (detail ? " - " + detail : ""));
     }
 
@@ -344,66 +347,54 @@ async function bypass(){
     } else if(currentType === "adlink") {
       success = !!(json && json.success);
       bypassed = json && json.url;
-    } else if(currentType === "bicolink") {
+    } else if(currentType === "delta") {
       success = !!(json && json.status);
       bypassed = json && (json.result || json.url || json.bypassed_url);
     } else if(currentType === "linkvertise") {
       success = !!(json && json.status);
       bypassed = json && json.bypassed_url;
-    } else if(currentType === "demon") {
-      // The former Delta endpoint is now presented as DemonBypass.
+    } else if(currentType === "universal") {
       success = !!(json && json.status);
       bypassed = json && (json.result || json.url || json.bypassed_url);
     }
 
     if(!success || !bypassed) {
-      const message = (json && typeof json === "object" &&
-        (json.error || json.message)) || "Request gagal";
+      const message = (json && typeof json === "object" && (json.error || json.message)) || "Request gagal";
       throw new Error(message);
     }
 
-    $("original").textContent =
-      (json && typeof json === "object" && (json.original_url || json.input_url)) || url;
+    $("original").textContent = (json && typeof json === "object" && (json.original_url || json.input_url || json.input)) || url;
     $("bypassed").textContent = bypassed;
-    $("creator").textContent =
-      (json && typeof json === "object" && json.creator) || (currentType === "demon" ? "DemonBypass" : "-");
-    $("time").textContent =
-      (json && typeof json === "object" && json.execution_time_ms != null)
-        ? json.execution_time_ms + " ms"
+    $("creator").textContent = (json && typeof json === "object" && json.creator) || 
+      (currentType === "delta" ? "DeltaBypass" : 
+       currentType === "universal" ? "UniversalBypass" : "-");
+    $("time").textContent = (json && typeof json === "object" && json.execution_time_ms != null)
+      ? json.execution_time_ms + " ms"
+      : (json && typeof json === "object" && json.time_taken) 
+        ? json.time_taken
         : elapsed + " ms";
 
     resultLink = bypassed;
     $("result").style.display = "block";
     toast("Bypass berhasil");
   } catch(err) {
-    debug(JSON.stringify({
+    debug({
       error: String(err),
-      message: err.message
-    }, null, 2));
+      message: err.message,
+      stack: err.stack
+    });
     toast(err.message || "Terjadi kesalahan");
   } finally {
     $("loader").style.display = "none";
   }
 }
+
 function updateDateTime() {
   const now = new Date();
 
-  const days = [
-    "Minggu","Senin","Selasa","Rabu",
-    "Kamis","Jumat","Sabtu"
-  ];
-
-  const months = [
-    "Januari","Februari","Maret","April",
-    "Mei","Juni","Juli","Agustus",
-    "September","Oktober","November","Desember"
-  ];
-
-  const hijriMonths = [
-    "Muharram","Safar","Rabiul Awal","Rabiul Akhir",
-    "Jumadil Awal","Jumadil Akhir","Rajab","Syaban",
-    "Ramadan","Syawal","Zulkaidah","Zulhijah"
-  ];
+  const days = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+  const months = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+  const hijriMonths = ["Muharram","Safar","Rabiul Awal","Rabiul Akhir","Jumadil Awal","Jumadil Akhir","Rajab","Syaban","Ramadan","Syawal","Zulkaidah","Zulhijah"];
 
   const day = days[now.getDay()];
   const date = now.getDate();
@@ -415,32 +406,19 @@ function updateDateTime() {
   const seconds = String(now.getSeconds()).padStart(2, "0");
 
   document.getElementById("dateDisplay").innerHTML =
-    `${day}, ${date} ${month} ${year}<br>
-     <span>${hours}:${minutes}:${seconds} WIB</span>`;
+    `${day}, ${date} ${month} ${year}<br><span>${hours}:${minutes}:${seconds} WIB</span>`;
 
   try {
-    const hijriFormatter = new Intl.DateTimeFormat(
-      "id-ID-u-ca-islamic-umalqura",
-      {
-        day: "numeric",
-        month: "numeric",
-        year: "numeric"
-      }
-    );
-
+    const hijriFormatter = new Intl.DateTimeFormat("id-ID-u-ca-islamic-umalqura", { day: "numeric", month: "numeric", year: "numeric" });
     const parts = hijriFormatter.formatToParts(now);
     const hDay = parts.find(p => p.type === "day")?.value;
     const hMonth = Number(parts.find(p => p.type === "month")?.value);
     const hYear = parts.find(p => p.type === "year")?.value;
-
-    document.getElementById("hijriDisplay").textContent =
-      `${hDay} ${hijriMonths[hMonth - 1]} ${hYear} H`;
+    document.getElementById("hijriDisplay").textContent = `${hDay} ${hijriMonths[hMonth - 1]} ${hYear} H`;
   } catch (e) {
     document.getElementById("hijriDisplay").textContent = "-";
   }
 
-  // Daftar peringatan/hari besar Indonesia 2026.
-  // Jika hari ini tidak ada, tampil "-".
   const observances2026 = {
     "1-1": "Tahun Baru Masehi 🎉",
     "16-1": "Isra Mikraj Nabi Muhammad SAW 🌙",
@@ -492,14 +470,12 @@ function updateDateTime() {
   };
 
   const key = `${date}-${now.getMonth() + 1}`;
-  document.getElementById("observanceDisplay").textContent =
-    `Peringatan Hari Ini: ${observances2026[key] || "-"}`;
+  document.getElementById("observanceDisplay").textContent = `Peringatan Hari Ini: ${observances2026[key] || "-"}`;
 }
 
 updateDateTime();
 setInterval(updateDateTime, 1000);
 
-// Simulasi angka online pada tampilan utama; bukan data server.
 setInterval(() => {
   const n = 140 + Math.floor(Math.random() * 9);
   $("live").textContent = n;
