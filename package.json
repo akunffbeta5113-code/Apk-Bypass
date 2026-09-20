@@ -8,6 +8,15 @@
   },
   "dependencies": {
     "cordova": "13.0.0",
-    "cordova-android": "13.0.0"
+    "cordova-android": "13.0.0",
+    "cordova-clipboard": "^1.3.0"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-clipboard": {}
+    },
+    "platforms": [
+      "android"
+    ]
   }
 }
