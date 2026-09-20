@@ -486,15 +486,44 @@ $("close").onclick = () => modal.classList.remove("show");
 modal.addEventListener("click", e => { if(e.target === modal) modal.classList.remove("show"); });
 
 $("paste").onclick = async () => {
-  try {
-    const text = await navigator.clipboard.readText();
-    $("url").value = text;
-    toast("Berhasil paste");
-  } catch {
-    const text = prompt("Tempel link di sini:");
-    if(text) $("url").value = text.trim();
+  // Coba Cordova Clipboard dulu (APK)
+  if (window.cordova && cordova.plugins && cordova.plugins.clipboard) {
+    cordova.plugins.clipboard.paste(function(text) {
+      if (text) {
+        $("url").value = text;
+        toast("Berhasil paste");
+      } else {
+        toast("Clipboard kosong");
+      }
+    }, function(err) {
+      console.error("Clipboard error:", err);
+      fallbackPrompt();
+    });
+    return;
   }
+
+  // Fallback: Web Clipboard API (Browser)
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        $("url").value = text;
+        toast("Berhasil paste");
+        return;
+      }
+    }
+  } catch (e) {
+    console.log("Web clipboard failed:", e);
+  }
+
+  // Fallback terakhir: prompt manual
+  fallbackPrompt();
 };
+
+function fallbackPrompt() {
+  const text = prompt("Tempel link di sini:");
+  if (text) $("url").value = text.trim();
+  }
 
 $("clear").onclick = () => {
   $("url").value = "";
